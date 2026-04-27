@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --brand: #2f6fed;
+  --accent: #16a3b8;
+  --ink: #18212f;
+}
+
+.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: #f5f7fb;
+  color: var(--ink);
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+.field-label {
+  @apply text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400;
+}
+
+.input {
+  @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-3 text-sm text-slate-900 outline-none transition focus:border-brand-500 focus:ring-4 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:focus:ring-brand-500/20;
+}
+
+.a4-page {
+  width: 794px;
+  min-height: 1123px;
+  background: white;
+}
+
+.proof-shadow {
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.16);
+}
+
+.no-break {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+
+  .app-shell {
+    display: block;
+  }
+}
