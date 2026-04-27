@@ -1,9 +1,16 @@
 import { useProofStore } from "../store/useProofStore";
 
+const formatDate = (value) => {
+  if (!value) return "-";
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
+};
+
 const Detail = ({ label, value }) => (
   <div>
-    <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">{label}</div>
-    <div className="mt-1 text-[15px] font-semibold text-slate-900">{value || "-"}</div>
+    <div className="text-[9px] font-bold uppercase tracking-[0.08em] text-[#60718b]">{label}</div>
+    <div className="mt-2 text-[14px] font-medium text-black">{value || "-"}</div>
   </div>
 );
 
@@ -20,26 +27,25 @@ export default function A4Proof() {
   const primary = media[0];
 
   return (
-    <div className="a4-page proof-shadow flex flex-col p-12 text-slate-900" style={{ "--proof-brand": settings.brandColor }}>
-      <header className="no-break">
-        <h2 className="text-center text-[34px] font-extrabold" style={{ color: "#111827" }}>
+    <div className="a4-page proof-shadow flex flex-col bg-white px-[42px] py-[38px] text-slate-900" style={{ "--proof-brand": settings.brandColor }}>
+      <header className="no-break pt-1">
+        <h2 className="text-center text-[34px] font-extrabold leading-tight text-black">
           {settings.proofTitle}
         </h2>
-        <div className="mx-auto mt-4 h-1 w-28 rounded-full" style={{ background: settings.brandColor }} />
       </header>
 
-      <section className="no-break mt-10 grid grid-cols-2 gap-x-12 gap-y-7 rounded-2xl border border-slate-200 bg-slate-50/70 p-6">
+      <section className="no-break mt-8 grid grid-cols-2 gap-x-[210px] gap-y-5 px-0">
         <Detail label="Client Name" value={proof.clientName} />
         <Detail label="Job Number" value={proof.jobNumber} />
-        <Detail label="Date" value={proof.currentDate} />
+        <Detail label="Date" value={formatDate(proof.currentDate)} />
         <Detail label="Revision" value={proof.revisionNumber} />
       </section>
 
-      <main className="no-break mt-8 flex min-h-[390px] flex-1 flex-col rounded-3xl border border-slate-200 bg-white p-7">
+      <main className="no-break mt-8 flex min-h-[300px] flex-1 flex-col rounded-lg border border-dashed border-[#b9c9df] bg-slate-50/40 p-6">
         {primary ? (
           <>
             <div className="flex flex-1 items-center justify-center overflow-hidden">
-              <img src={primary.dataUrl} alt={primary.name} className="max-h-[470px] max-w-full object-contain" />
+              <img src={primary.dataUrl} alt={primary.name} className="max-h-[410px] max-w-full object-contain" />
             </div>
             {media.length > 1 && (
               <div className="mt-5 grid grid-cols-4 gap-3">
@@ -53,7 +59,7 @@ export default function A4Proof() {
             )}
           </>
         ) : (
-          <div className="flex flex-1 items-center justify-center rounded-2xl border border-dashed border-slate-300 bg-slate-50 text-[18px] font-bold text-slate-400">
+          <div className="flex flex-1 items-center justify-center text-[22px] font-medium text-[#8da0bb]">
             Upload artwork to preview
           </div>
         )}
@@ -67,24 +73,43 @@ export default function A4Proof() {
       )}
 
       {settings.includeSignature && (
-        <section className="no-break mt-7 border-t border-slate-200 pt-6">
-          <h3 className="text-[13px] font-extrabold uppercase tracking-[0.14em] text-slate-800">{settings.signatureWording}</h3>
-          <div className="mt-4 h-20 rounded-xl border border-slate-300 bg-white" />
-          <div className="mt-7 grid grid-cols-2 gap-10">
-            <div className="border-t border-slate-500 pt-2 text-[11px] text-slate-500">{settings.printNameLabel}</div>
-            <div className="border-t border-slate-500 pt-2 text-[11px] text-slate-500">{settings.dateLabel}</div>
+        <section className="no-break mt-8 border-t-2 border-slate-200 pt-6">
+          <h3 className="text-[9px] font-extrabold uppercase tracking-[0.08em] text-[#60718b]">{settings.signatureWording}</h3>
+          <div className="mt-3 flex h-[74px] items-start rounded-lg border-2 border-[#111827] bg-white px-4 py-4 text-[10px] italic text-[#8da0bb]">
+            Please sign here
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-24 text-[10px] text-[#60718b]">
+            <div>{settings.printNameLabel}: ________________________</div>
+            <div>{settings.dateLabel}: ________________________</div>
           </div>
         </section>
       )}
 
-      <footer className="no-break mt-8 border-t border-slate-200 pt-5">
-        <div className="flex items-center gap-6">
-          <div className="flex h-12 w-36 items-center justify-start">
-            {settings.logo ? <img src={settings.logo} alt={settings.name} className="max-h-12 max-w-36 object-contain" /> : <strong style={{ color: settings.brandColor }}>{settings.name}</strong>}
+      <footer className="no-break mt-auto border-t border-slate-200 pt-8">
+        <div className="flex items-end justify-between gap-6">
+          <div className="flex h-14 w-40 items-end justify-start">
+            {settings.logo ? (
+              <img src={settings.logo} alt={settings.name} className="max-h-14 max-w-40 object-contain" />
+            ) : (
+              <div className="flex items-end gap-2">
+                <span className="grid h-10 w-10 grid-cols-2 gap-0.5">
+                  <span className="rounded-sm bg-[#ef3e36]" />
+                  <span className="rounded-sm bg-[#3b68b2]" />
+                  <span className="rounded-sm bg-[#00a6a6]" />
+                  <span className="rounded-sm bg-[#f6c143]" />
+                </span>
+                <span className="leading-none">
+                  <strong className="block text-[23px] font-extrabold text-black">Jigsaw</strong>
+                  <span className="block text-[7px] font-bold uppercase tracking-wide text-slate-500">Signs N Print</span>
+                </span>
+              </div>
+            )}
           </div>
-          <div className="text-[11px] leading-5 text-slate-500">
+          <div className="text-right text-[10px] leading-5 text-[#40516b]">
             <div>{settings.address}</div>
-            <div>{settings.phone} | {settings.email} | {settings.website}</div>
+            <div>{settings.phone}</div>
+            <div>{settings.email}</div>
+            {settings.website && <div>{settings.website}</div>}
           </div>
         </div>
       </footer>

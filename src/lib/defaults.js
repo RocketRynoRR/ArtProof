@@ -3,9 +3,9 @@ export const todayIso = () => new Date().toISOString().slice(0, 10);
 export const defaultCompany = {
   logo: "",
   name: "Jigsaw Signs & Print",
-  address: "Unit 1, 12 Production Road, Perth WA",
-  phone: "(08) 0000 0000",
-  email: "artwork@jigsawsigns.com.au",
+  address: "1/114 Strelly Street, Busselton",
+  phone: "(08) 9751 3810",
+  email: "art@jigsawsigns.com.au",
   website: "jigsawsigns.com.au"
 };
 
@@ -25,9 +25,9 @@ export const defaultSettings = {
   titleSize: 28,
   bodySize: 11,
   labelSize: 7,
-  brandColor: "#2f6fed",
-  accentColor: "#16a3b8",
-  defaultZoom: 68
+  brandColor: "#10223f",
+  accentColor: "#f8c983",
+  defaultZoom: 85
 };
 
 export const defaultProof = {

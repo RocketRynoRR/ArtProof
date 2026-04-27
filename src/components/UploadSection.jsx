@@ -34,18 +34,18 @@ export default function UploadSection({ title, storageKey, helper }) {
       </div>
       <div
         {...getRootProps()}
-        className={`rounded-2xl border border-dashed p-4 text-center transition ${
+        className={`rounded-lg border border-dashed p-6 text-center transition ${
           isDragActive
             ? "border-brand-500 bg-brand-50 dark:bg-brand-500/10"
             : "border-slate-300 bg-slate-50 hover:border-brand-400 dark:border-slate-700 dark:bg-slate-900/80"
         }`}
       >
         <input {...getInputProps()} />
-        <ImagePlus className="mx-auto h-6 w-6 text-brand-600" />
-        <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-          Drag images here or click to upload
+        <ImagePlus className="mx-auto h-8 w-8 text-slate-400" />
+        <p className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+          Drag & drop or click to upload
         </p>
-        <p className="text-xs text-slate-500">JPG and PNG supported</p>
+        <p className="text-xs font-medium text-slate-500">Supports JPG, PNG • Multiple files allowed</p>
       </div>
 
       {items.length > 0 && (
@@ -60,7 +60,7 @@ export default function UploadSection({ title, storageKey, helper }) {
                 if (dragId) reorderUpload(storageKey, dragId, item.id);
                 setDragId(null);
               }}
-              className="flex items-center gap-3 rounded-xl border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+              className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-900"
             >
               <GripVertical className="h-4 w-4 shrink-0 text-slate-400" />
               <img src={item.dataUrl} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />

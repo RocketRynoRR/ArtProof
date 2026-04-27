@@ -15,6 +15,13 @@ const dataUrlBytes = (dataUrl) => {
   return Uint8Array.from(binary, (char) => char.charCodeAt(0));
 };
 
+const formatDate = (value) => {
+  if (!value) return "-";
+  const date = new Date(`${value}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-AU", { day: "numeric", month: "long", year: "numeric" });
+};
+
 const wrapText = (text, font, size, maxWidth) => {
   const lines = [];
   String(text || "")
@@ -76,7 +83,19 @@ const drawImageContain = async (pdfDoc, page, item, box) => {
 
 const drawLogo = async (pdfDoc, page, settings, x, y, maxWidth, maxHeight, fonts) => {
   if (!settings.logo) {
-    page.drawText(settings.name, { x, y: y + 15, size: 13, font: fonts.bold, color: hexToRgb(settings.brandColor) });
+    const tile = 9;
+    const colours = [rgb(0.94, 0.24, 0.21), rgb(0.23, 0.41, 0.7), rgb(0, 0.65, 0.65), rgb(0.96, 0.76, 0.26)];
+    colours.forEach((colour, index) => {
+      page.drawRectangle({
+        x: x + (index % 2) * (tile + 1),
+        y: y + 12 - Math.floor(index / 2) * (tile + 1),
+        width: tile,
+        height: tile,
+        color: colour
+      });
+    });
+    page.drawText("Jigsaw", { x: x + 26, y: y + 13, size: 15, font: fonts.bold, color: rgb(0.02, 0.03, 0.05) });
+    page.drawText("SIGNS N PRINT", { x: x + 28, y: y + 7, size: 4.5, font: fonts.bold, color: rgb(0.38, 0.44, 0.52) });
     return;
   }
   try {
@@ -118,7 +137,7 @@ export const generateProofPdf = async (proof, settings) => {
   drawLabelValue(page, fonts, "Client Name", proof.clientName, margin, y, contentWidth / 2 - 12, settings);
   drawLabelValue(page, fonts, "Job Number", proof.jobNumber, margin + contentWidth / 2 + 18, y, contentWidth / 2 - 18, settings);
   y -= 46;
-  drawLabelValue(page, fonts, "Date", proof.currentDate, margin, y, contentWidth / 2 - 12, settings);
+  drawLabelValue(page, fonts, "Date", formatDate(proof.currentDate), margin, y, contentWidth / 2 - 12, settings);
   drawLabelValue(page, fonts, "Revision", proof.revisionNumber, margin + contentWidth / 2 + 18, y, contentWidth / 2 - 18, settings);
   y -= 44;
 
@@ -172,7 +191,8 @@ export const generateProofPdf = async (proof, settings) => {
     y -= 24;
     page.drawText(settings.signatureWording, { x: margin, y, size: 11, font: fonts.bold, color: rgb(0.16, 0.19, 0.25) });
     y -= 62;
-    page.drawRectangle({ x: margin, y, width: contentWidth, height: 48, borderColor: rgb(0.78, 0.82, 0.88), borderWidth: 1 });
+    page.drawRectangle({ x: margin, y, width: contentWidth, height: 48, borderColor: rgb(0.07, 0.1, 0.16), borderWidth: 1.5 });
+    page.drawText("Please sign here", { x: margin + 10, y: y + 30, size: 7, font: fonts.regular, color: rgb(0.55, 0.63, 0.74) });
     y -= 30;
     page.drawLine({ start: { x: margin, y }, end: { x: margin + 210, y }, thickness: 0.8, color: rgb(0.48, 0.54, 0.62) });
     page.drawLine({ start: { x: margin + 270, y }, end: { x: margin + 430, y }, thickness: 0.8, color: rgb(0.48, 0.54, 0.62) });
@@ -183,8 +203,11 @@ export const generateProofPdf = async (proof, settings) => {
   const footerY = 30;
   page.drawLine({ start: { x: margin, y: footerY + 48 }, end: { x: A4.width - margin, y: footerY + 48 }, thickness: 0.6, color: rgb(0.82, 0.86, 0.9) });
   await drawLogo(pdfDoc, page, settings, margin, footerY, 120, 34, fonts);
-  const contact = [settings.address, settings.phone, settings.email, settings.website].filter(Boolean).join("  |  ");
-  page.drawText(contact, { x: margin + 148, y: footerY + 17, size: 8, font: fonts.regular, color: rgb(0.34, 0.39, 0.47), maxWidth: contentWidth - 148 });
+  const contactX = A4.width - margin - 160;
+  page.drawText(settings.address || "", { x: contactX, y: footerY + 28, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+  page.drawText(settings.phone || "", { x: contactX, y: footerY + 17, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+  page.drawText(settings.email || "", { x: contactX, y: footerY + 6, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+  page.drawText(settings.website || "", { x: contactX, y: footerY - 5, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
 
   if (settings.includeDisclaimer) {
     const disclaimer = pdfDoc.addPage([A4.width, A4.height]);

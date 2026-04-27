@@ -51,7 +51,16 @@ export const useProofStore = create(
     }),
     {
       name: "jigsaw-artwork-proof-draft",
-      version: 1
+      version: 2,
+      migrate: (persisted) => ({
+        ...persisted,
+        settings: { ...defaultSettings, ...persisted?.settings },
+        proof: {
+          ...defaultProof,
+          currentDate: persisted?.proof?.currentDate || todayIso(),
+          ...persisted?.proof
+        }
+      })
     }
   )
 );
