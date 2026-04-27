@@ -92,13 +92,15 @@ export default function SettingsModal({ open, onClose }) {
               <Field label="Email"><input className="input" value={settings.email} onChange={(e) => setSettings({ email: e.target.value })} /></Field>
             </div>
             <Field label="Website"><input className="input" value={settings.website} onChange={(e) => setSettings({ website: e.target.value })} /></Field>
-            <Field label="Footer Layout">
-              <select className="input" value={settings.footerLayout} onChange={(e) => setSettings({ footerLayout: e.target.value })}>
-                <option value="balanced">Balanced</option>
-                <option value="compact">Compact</option>
-                <option value="logo-left">Logo left</option>
-              </select>
-            </Field>
+            <div className="grid gap-4 rounded-2xl border border-slate-200 p-4 dark:border-slate-800">
+              <h4 className="text-sm font-extrabold uppercase tracking-wide text-slate-500">Page Footer</h4>
+              <Field label="Footer Business Name"><input className="input" value={settings.footerBusinessName || ""} onChange={(e) => setSettings({ footerBusinessName: e.target.value })} /></Field>
+              <Field label="Footer Tagline"><input className="input" value={settings.footerTagline || ""} onChange={(e) => setSettings({ footerTagline: e.target.value })} /></Field>
+              <label className="flex items-center gap-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                <input type="checkbox" checked={Boolean(settings.footerShowContact)} onChange={(e) => setSettings({ footerShowContact: e.target.checked })} />
+                Show phone and email in footer
+              </label>
+            </div>
           </section>
 
           <section className="space-y-4">

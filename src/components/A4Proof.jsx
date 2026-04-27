@@ -76,32 +76,30 @@ function ProofPage({ proof, settings, item, index, total }) {
         </section>
       )}
 
-      <footer className="no-break mt-auto border-t border-slate-200 pt-8">
-        <div className="flex items-end justify-between gap-6">
-          <div className="flex h-14 w-40 items-end justify-start">
+      <footer className="no-break mt-auto border-t border-slate-200 pt-4">
+        <div className="flex items-center justify-between gap-6">
+          <div className="flex min-w-0 items-center gap-3">
             {settings.logo ? (
-              <img src={settings.logo} alt={settings.name} className="max-h-14 max-w-40 object-contain" />
+              <img src={settings.logo} alt={settings.footerBusinessName || settings.name} className="max-h-8 max-w-24 object-contain" />
             ) : (
-              <div className="flex items-end gap-2">
-                <span className="grid h-10 w-10 grid-cols-2 gap-0.5">
+              <span className="grid h-7 w-7 shrink-0 grid-cols-2 gap-0.5">
                   <span className="rounded-sm bg-[#ef3e36]" />
                   <span className="rounded-sm bg-[#3b68b2]" />
                   <span className="rounded-sm bg-[#00a6a6]" />
                   <span className="rounded-sm bg-[#f6c143]" />
-                </span>
-                <span className="leading-none">
-                  <strong className="block text-[23px] font-extrabold text-black">Jigsaw</strong>
-                  <span className="block text-[7px] font-bold uppercase tracking-wide text-slate-500">Signs N Print</span>
-                </span>
-              </div>
+              </span>
             )}
+            <div className="min-w-0 leading-tight">
+              <strong className="block truncate text-[13px] font-extrabold text-black">{settings.footerBusinessName || settings.name}</strong>
+              {settings.footerTagline && <span className="block truncate text-[8px] font-bold uppercase tracking-wide text-slate-500">{settings.footerTagline}</span>}
+            </div>
           </div>
-          <div className="text-right text-[10px] leading-5 text-[#40516b]">
-            <div>{settings.address}</div>
-            <div>{settings.phone}</div>
-            <div>{settings.email}</div>
-            {settings.website && <div>{settings.website}</div>}
-          </div>
+          {settings.footerShowContact && (
+            <div className="text-right text-[8px] leading-4 text-[#40516b]">
+              <div>{settings.phone}</div>
+              <div>{settings.email}</div>
+            </div>
+          )}
         </div>
       </footer>
     </div>

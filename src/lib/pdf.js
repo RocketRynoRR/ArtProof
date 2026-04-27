@@ -83,19 +83,17 @@ const drawImageContain = async (pdfDoc, page, item, box) => {
 
 const drawLogo = async (pdfDoc, page, settings, x, y, maxWidth, maxHeight, fonts) => {
   if (!settings.logo) {
-    const tile = 9;
+    const tile = 6;
     const colours = [rgb(0.94, 0.24, 0.21), rgb(0.23, 0.41, 0.7), rgb(0, 0.65, 0.65), rgb(0.96, 0.76, 0.26)];
     colours.forEach((colour, index) => {
       page.drawRectangle({
         x: x + (index % 2) * (tile + 1),
-        y: y + 12 - Math.floor(index / 2) * (tile + 1),
+        y: y + 13 - Math.floor(index / 2) * (tile + 1),
         width: tile,
         height: tile,
         color: colour
       });
     });
-    page.drawText("Jigsaw", { x: x + 26, y: y + 13, size: 15, font: fonts.bold, color: rgb(0.02, 0.03, 0.05) });
-    page.drawText("SIGNS N PRINT", { x: x + 28, y: y + 7, size: 4.5, font: fonts.bold, color: rgb(0.38, 0.44, 0.52) });
     return;
   }
   try {
@@ -154,13 +152,31 @@ export const generateProofPdf = async (proof, settings) => {
 
   const drawPageFooter = async (page) => {
     const footerY = 30;
-    page.drawLine({ start: { x: margin, y: footerY + 48 }, end: { x: A4.width - margin, y: footerY + 48 }, thickness: 0.6, color: rgb(0.82, 0.86, 0.9) });
-    await drawLogo(pdfDoc, page, settings, margin, footerY, 120, 34, fonts);
-    const contactX = A4.width - margin - 160;
-    page.drawText(settings.address || "", { x: contactX, y: footerY + 28, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.phone || "", { x: contactX, y: footerY + 17, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.email || "", { x: contactX, y: footerY + 6, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.website || "", { x: contactX, y: footerY - 5, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+    page.drawLine({ start: { x: margin, y: footerY + 34 }, end: { x: A4.width - margin, y: footerY + 34 }, thickness: 0.6, color: rgb(0.82, 0.86, 0.9) });
+    await drawLogo(pdfDoc, page, settings, margin, footerY + 2, 70, 20, fonts);
+    page.drawText(settings.footerBusinessName || settings.name || "", {
+      x: margin + 26,
+      y: footerY + 13,
+      size: 9,
+      font: fonts.bold,
+      color: rgb(0.02, 0.03, 0.05),
+      maxWidth: 190
+    });
+    if (settings.footerTagline) {
+      page.drawText(settings.footerTagline, {
+        x: margin + 26,
+        y: footerY + 3,
+        size: 5.5,
+        font: fonts.bold,
+        color: rgb(0.38, 0.44, 0.52),
+        maxWidth: 190
+      });
+    }
+    if (settings.footerShowContact) {
+      const contactX = A4.width - margin - 130;
+      page.drawText(settings.phone || "", { x: contactX, y: footerY + 13, size: 6, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 130 });
+      page.drawText(settings.email || "", { x: contactX, y: footerY + 3, size: 6, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 130 });
+    }
   };
 
   const drawProofPage = async (item, index, total) => {

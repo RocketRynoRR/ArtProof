@@ -12,6 +12,9 @@ export const defaultCompany = {
 export const defaultSettings = {
   ...defaultCompany,
   footerLayout: "balanced",
+  footerBusinessName: "Jigsaw Signs & Print",
+  footerTagline: "Artwork Proof",
+  footerShowContact: false,
   proofTitle: "Artwork Proof",
   disclaimerHeading: "Artwork Disclaimer",
   disclaimerText:
