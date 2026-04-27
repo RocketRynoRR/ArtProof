@@ -44,7 +44,6 @@ export default function Sidebar({ onOpenSettings }) {
         </label>
 
         <UploadSection title="Artwork Images (JPEG/PNG) *" storageKey="artwork" helper="Each selected image will generate its own PDF page." />
-        <UploadSection title="Item Photos" storageKey="itemPhotos" helper="Optional reference photos. Selected photos also get their own pages." />
         <UploadSection title="Site / Location Photos" storageKey="sitePhotos" helper="Optional install/location context. Selected photos also get their own pages." />
       </div>
 
