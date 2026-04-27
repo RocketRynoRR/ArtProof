@@ -23,7 +23,12 @@ export default function App() {
     <div className="app-shell h-screen overflow-hidden bg-slate-50 text-ink transition dark:bg-slate-950 dark:text-slate-100">
       <header className="border-b border-slate-200 bg-white px-4 py-3 text-center dark:border-slate-800 dark:bg-slate-950 sm:px-6">
         <div className="mx-auto flex max-w-[1880px] items-center justify-between gap-4">
-          <div className="hidden w-24 sm:block" />
+          <a
+            href="https://rocketrynorr.github.io/Dashboard/index.html"
+            className="hidden w-24 items-center justify-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:inline-flex"
+          >
+            Dashboard
+          </a>
           <div>
             <h1 className="text-2xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-3xl">
               Artwork Proof Generator
