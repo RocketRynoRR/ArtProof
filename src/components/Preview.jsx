@@ -1,4 +1,4 @@
-import { Minus, Plus, SearchMinus, SearchPlus } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import A4Proof from "./A4Proof";
 import { useProofStore } from "../store/useProofStore";
@@ -21,9 +21,8 @@ export default function Preview() {
         </div>
         <div className="flex items-center gap-2 bg-white p-1 dark:bg-slate-950">
           <button className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setZoom((z) => clamp(z - 5))} aria-label="Zoom out">
-            <SearchMinus className="h-4 w-4" />
+            <Minus className="h-4 w-4" />
           </button>
-          <Minus className="h-3 w-3 text-slate-400" />
           <input
             type="range"
             min="35"
@@ -32,9 +31,8 @@ export default function Preview() {
             onChange={(e) => setZoom(Number(e.target.value))}
             className="w-32 accent-slate-950 dark:accent-slate-100"
           />
-          <Plus className="h-3 w-3 text-slate-400" />
           <button className="rounded-lg p-2 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setZoom((z) => clamp(z + 5))} aria-label="Zoom in">
-            <SearchPlus className="h-4 w-4" />
+            <Plus className="h-4 w-4" />
           </button>
           <span className="w-12 text-right text-sm font-bold text-slate-700 dark:text-slate-200">{zoom}%</span>
         </div>
