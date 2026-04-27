@@ -2,6 +2,17 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { defaultProof, defaultSettings, todayIso } from "../lib/defaults";
 
+const mergeProof = (proof = {}) => ({
+  ...defaultProof,
+  ...proof,
+  currentDate: proof.currentDate || todayIso(),
+  artwork: Array.isArray(proof.artwork) ? proof.artwork : [],
+  itemPhotos: Array.isArray(proof.itemPhotos) ? proof.itemPhotos : [],
+  sitePhotos: Array.isArray(proof.sitePhotos) ? proof.sitePhotos : []
+});
+
+const mergeSettings = (settings = {}) => ({ ...defaultSettings, ...settings });
+
 const reorder = (items, fromId, toId) => {
   const from = items.findIndex((item) => item.id === fromId);
   const to = items.findIndex((item) => item.id === toId);
@@ -15,8 +26,8 @@ const reorder = (items, fromId, toId) => {
 export const useProofStore = create(
   persist(
     (set) => ({
-      proof: { ...defaultProof, currentDate: todayIso() },
-      settings: defaultSettings,
+      proof: mergeProof(),
+      settings: mergeSettings(),
       darkMode: false,
       setProofField: (field, value) =>
         set((state) => ({ proof: { ...state.proof, [field]: value } })),
@@ -25,41 +36,43 @@ export const useProofStore = create(
       setDarkMode: (darkMode) => set({ darkMode }),
       addUploads: (key, uploads) =>
         set((state) => ({
-          proof: { ...state.proof, [key]: [...state.proof[key], ...uploads] }
+          proof: { ...mergeProof(state.proof), [key]: [...(state.proof[key] || []), ...uploads] }
         })),
       removeUpload: (key, id) =>
         set((state) => ({
           proof: {
             ...state.proof,
-            [key]: state.proof[key].filter((item) => item.id !== id)
+            [key]: (state.proof[key] || []).filter((item) => item.id !== id)
           }
         })),
       toggleUpload: (key, id) =>
         set((state) => ({
           proof: {
             ...state.proof,
-            [key]: state.proof[key].map((item) =>
+            [key]: (state.proof[key] || []).map((item) =>
               item.id === id ? { ...item, selected: !item.selected } : item
             )
           }
         })),
       reorderUpload: (key, fromId, toId) =>
         set((state) => ({
-          proof: { ...state.proof, [key]: reorder(state.proof[key], fromId, toId) }
+          proof: { ...mergeProof(state.proof), [key]: reorder(state.proof[key] || [], fromId, toId) }
         })),
       resetDraft: () => set({ proof: { ...defaultProof, currentDate: todayIso() } })
     }),
     {
       name: "jigsaw-artwork-proof-draft",
       version: 2,
+      merge: (persisted, current) => ({
+        ...current,
+        ...(persisted || {}),
+        settings: mergeSettings(persisted?.settings),
+        proof: mergeProof(persisted?.proof)
+      }),
       migrate: (persisted) => ({
         ...persisted,
-        settings: { ...defaultSettings, ...persisted?.settings },
-        proof: {
-          ...defaultProof,
-          currentDate: persisted?.proof?.currentDate || todayIso(),
-          ...persisted?.proof
-        }
+        settings: mergeSettings(persisted?.settings),
+        proof: mergeProof(persisted?.proof)
       })
     }
   )

@@ -106,9 +106,9 @@ const drawLogo = async (pdfDoc, page, settings, x, y, maxWidth, maxHeight, fonts
 };
 
 const selectedMedia = (proof) => [
-  ...proof.artwork.map((item) => ({ ...item, heading: "Artwork" })),
-  ...proof.itemPhotos.map((item) => ({ ...item, heading: "Item Photo" })),
-  ...proof.sitePhotos.map((item) => ({ ...item, heading: "Site / Location Photo" }))
+  ...(proof.artwork || []).map((item) => ({ ...item, heading: "Artwork" })),
+  ...(proof.itemPhotos || []).map((item) => ({ ...item, heading: "Item Photo" })),
+  ...(proof.sitePhotos || []).map((item) => ({ ...item, heading: "Site / Location Photo" }))
 ].filter((item) => item.selected);
 
 export const generateProofPdf = async (proof, settings) => {

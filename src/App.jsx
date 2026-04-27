@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
-import { motion } from "framer-motion";
 import Sidebar from "./components/Sidebar";
 import Preview from "./components/Preview";
 import SettingsModal from "./components/SettingsModal";
@@ -27,9 +26,9 @@ export default function App() {
             {darkMode ? "Light" : "Dark"}
           </button>
         </div>
-        <motion.h1 initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-[42px]">
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-950 dark:text-white sm:text-[42px]">
           Artwork Proof Generator
-        </motion.h1>
+        </h1>
         <p className="mt-3 text-base font-medium text-slate-500 dark:text-slate-400">
           Create professional PDF proofs with client approval
         </p>

@@ -5,7 +5,7 @@ import { makeUpload } from "../lib/files";
 import { useProofStore } from "../store/useProofStore";
 
 export default function UploadSection({ title, storageKey, helper }) {
-  const items = useProofStore((state) => state.proof[storageKey]);
+  const items = useProofStore((state) => state.proof[storageKey] || []);
   const addUploads = useProofStore((state) => state.addUploads);
   const removeUpload = useProofStore((state) => state.removeUpload);
   const toggleUpload = useProofStore((state) => state.toggleUpload);

@@ -15,9 +15,9 @@ const Detail = ({ label, value }) => (
 );
 
 const selectedMedia = (proof) => [
-  ...proof.artwork.map((item) => ({ ...item, label: "Artwork" })),
-  ...proof.itemPhotos.map((item) => ({ ...item, label: "Item Photo" })),
-  ...proof.sitePhotos.map((item) => ({ ...item, label: "Site / Location" }))
+  ...(proof.artwork || []).map((item) => ({ ...item, label: "Artwork" })),
+  ...(proof.itemPhotos || []).map((item) => ({ ...item, label: "Item Photo" })),
+  ...(proof.sitePhotos || []).map((item) => ({ ...item, label: "Site / Location" }))
 ].filter((item) => item.selected);
 
 export default function A4Proof() {
