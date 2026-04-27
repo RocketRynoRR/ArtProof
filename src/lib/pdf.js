@@ -122,11 +122,10 @@ export const generateProofPdf = async (proof, settings) => {
   const media = selectedMedia(proof);
   const contentWidth = A4.width - margin * 2;
 
-  const drawProofPage = async (item, index, total) => {
-    const page = pdfDoc.addPage([A4.width, A4.height]);
+  const drawPageHeader = (page, title, metaText) => {
     let y = A4.height - margin;
 
-    page.drawText(settings.proofTitle || "Artwork Proof", {
+    page.drawText(title || settings.proofTitle || "Artwork Proof", {
       x: margin,
       y,
       size: settings.titleSize,
@@ -134,8 +133,8 @@ export const generateProofPdf = async (proof, settings) => {
       color: rgb(0.08, 0.11, 0.16)
     });
     page.drawLine({ start: { x: margin, y: y - 14 }, end: { x: A4.width - margin, y: y - 14 }, thickness: 1.2, color: brand });
-    if (total > 1) {
-      page.drawText(`Artwork ${index + 1} of ${total}`, {
+    if (metaText) {
+      page.drawText(metaText, {
         x: A4.width - margin - 96,
         y: y + 6,
         size: 8,
@@ -150,7 +149,23 @@ export const generateProofPdf = async (proof, settings) => {
     y -= 46;
     drawLabelValue(page, fonts, "Date", formatDate(proof.currentDate), margin, y, contentWidth / 2 - 12, settings);
     drawLabelValue(page, fonts, "Revision", proof.revisionNumber, margin + contentWidth / 2 + 18, y, contentWidth / 2 - 18, settings);
-    y -= 44;
+    return y - 44;
+  };
+
+  const drawPageFooter = async (page) => {
+    const footerY = 30;
+    page.drawLine({ start: { x: margin, y: footerY + 48 }, end: { x: A4.width - margin, y: footerY + 48 }, thickness: 0.6, color: rgb(0.82, 0.86, 0.9) });
+    await drawLogo(pdfDoc, page, settings, margin, footerY, 120, 34, fonts);
+    const contactX = A4.width - margin - 160;
+    page.drawText(settings.address || "", { x: contactX, y: footerY + 28, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+    page.drawText(settings.phone || "", { x: contactX, y: footerY + 17, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+    page.drawText(settings.email || "", { x: contactX, y: footerY + 6, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+    page.drawText(settings.website || "", { x: contactX, y: footerY - 5, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+  };
+
+  const drawProofPage = async (item, index, total) => {
+    const page = pdfDoc.addPage([A4.width, A4.height]);
+    let y = drawPageHeader(page, settings.proofTitle || "Artwork Proof", total > 1 ? `Artwork ${index + 1} of ${total}` : "");
 
     const artworkHeight = settings.includeSignature ? 318 : 395;
     page.drawRectangle({ x: margin, y: y - artworkHeight, width: contentWidth, height: artworkHeight, borderColor: rgb(0.83, 0.86, 0.9), borderWidth: 1, color: rgb(0.98, 0.99, 1) });
@@ -211,14 +226,7 @@ export const generateProofPdf = async (proof, settings) => {
       page.drawText(settings.dateLabel, { x: margin + 270, y: y - 13, size: 8, font: fonts.regular, color: rgb(0.44, 0.49, 0.57) });
     }
 
-    const footerY = 30;
-    page.drawLine({ start: { x: margin, y: footerY + 48 }, end: { x: A4.width - margin, y: footerY + 48 }, thickness: 0.6, color: rgb(0.82, 0.86, 0.9) });
-    await drawLogo(pdfDoc, page, settings, margin, footerY, 120, 34, fonts);
-    const contactX = A4.width - margin - 160;
-    page.drawText(settings.address || "", { x: contactX, y: footerY + 28, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.phone || "", { x: contactX, y: footerY + 17, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.email || "", { x: contactX, y: footerY + 6, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.website || "", { x: contactX, y: footerY - 5, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+    await drawPageFooter(page);
   };
 
   if (media.length) {
@@ -231,16 +239,13 @@ export const generateProofPdf = async (proof, settings) => {
 
   if (settings.includeDisclaimer) {
     const disclaimer = pdfDoc.addPage([A4.width, A4.height]);
-    let dy = A4.height - margin;
-    disclaimer.drawText(settings.disclaimerHeading, { x: margin, y: dy, size: 24, font: fonts.bold, color: rgb(0.08, 0.11, 0.16) });
-    dy -= 34;
-    disclaimer.drawLine({ start: { x: margin, y: dy }, end: { x: A4.width - margin, y: dy }, thickness: 1.2, color: brand });
-    dy -= 40;
+    let dy = drawPageHeader(disclaimer, settings.disclaimerHeading || "Artwork Disclaimer", "Disclaimer");
+    dy -= 10;
     wrapText(settings.disclaimerText, fonts.regular, 12, contentWidth).forEach((line) => {
       disclaimer.drawText(line, { x: margin, y: dy, size: 12, font: fonts.regular, color: rgb(0.16, 0.19, 0.25) });
       dy -= 22;
     });
-    disclaimer.drawText(settings.name, { x: margin, y: 48, size: 11, font: fonts.bold, color: brand });
+    await drawPageFooter(disclaimer);
   }
 
   const bytes = await pdfDoc.save();
