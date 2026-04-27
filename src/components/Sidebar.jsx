@@ -47,7 +47,7 @@ export default function Sidebar({ onOpenSettings }) {
         <UploadSection title="Site / Location Photos" storageKey="sitePhotos" helper="Optional install/location context. Selected photos also get their own pages." />
       </div>
 
-      <div className="grid grid-cols-[auto_auto_1fr] gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
+      <div className="grid grid-cols-[auto_auto_1fr] gap-3 border-t border-slate-200 bg-white/95 p-4 pb-5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
         <button
           type="button"
           onClick={() => {

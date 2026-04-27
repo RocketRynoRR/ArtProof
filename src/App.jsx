@@ -42,7 +42,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto flex h-[calc(100vh-74px)] max-w-[1880px] flex-col gap-5 overflow-hidden px-4 py-4 sm:px-4 lg:flex-row">
+      <main className="mx-auto flex h-[calc(100vh-74px)] max-w-[1880px] flex-col gap-5 overflow-hidden px-4 pb-6 pt-4 sm:px-4 lg:flex-row">
         <Sidebar onOpenSettings={() => setSettingsOpen(true)} />
         <Preview />
       </main>
