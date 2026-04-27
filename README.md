@@ -20,4 +20,9 @@ npm install
 npm run dev
 ```
 
+## GitHub Pages
+
+This repository is configured for GitHub Pages deployment through `.github/workflows/deploy.yml`.
+In GitHub, set **Settings > Pages > Build and deployment > Source** to **GitHub Actions**.
+
 The app is intentionally structured with local storage first so it can later grow into online approvals, proof sharing, saved proof history, accounts, cloud storage, and database-backed workflows.
