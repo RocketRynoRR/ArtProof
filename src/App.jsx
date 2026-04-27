@@ -15,7 +15,7 @@ export default function App() {
   }, [darkMode]);
 
   return (
-    <div className="app-shell min-h-screen bg-slate-50 text-ink transition dark:bg-slate-950 dark:text-slate-100">
+    <div className="app-shell h-screen overflow-hidden bg-slate-50 text-ink transition dark:bg-slate-950 dark:text-slate-100">
       <header className="border-b border-slate-200 bg-white px-4 py-3 text-center dark:border-slate-800 dark:bg-slate-950 sm:px-6">
         <div className="mx-auto flex max-w-[1880px] items-center justify-between gap-4">
           <div className="hidden w-24 sm:block" />
@@ -37,7 +37,7 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-[1880px] flex-col gap-5 px-4 py-4 sm:px-4 lg:h-[calc(100vh-86px)] lg:flex-row">
+      <main className="mx-auto flex h-[calc(100vh-74px)] max-w-[1880px] flex-col gap-5 overflow-hidden px-4 py-4 sm:px-4 lg:flex-row">
         <Sidebar onOpenSettings={() => setSettingsOpen(true)} />
         <Preview />
       </main>

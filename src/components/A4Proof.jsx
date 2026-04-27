@@ -20,18 +20,18 @@ const selectedMedia = (proof) => [
   ...(proof.sitePhotos || []).map((item) => ({ ...item, label: "Site / Location" }))
 ].filter((item) => item.selected);
 
-export default function A4Proof() {
-  const proof = useProofStore((state) => state.proof);
-  const settings = useProofStore((state) => state.settings);
-  const media = selectedMedia(proof);
-  const primary = media[0];
+function ProofPage({ proof, settings, item, index, total }) {
+  const globalNotes = proof.notes?.trim();
+  const itemNotes = item?.notes?.trim();
 
   return (
-    <div className="a4-page proof-shadow flex flex-col bg-white px-[42px] py-[38px] text-slate-900" style={{ "--proof-brand": settings.brandColor }}>
+    <div className="a4-page proof-shadow flex flex-col bg-white px-[42px] py-[38px] text-slate-900">
       <header className="no-break pt-1">
-        <h2 className="text-center text-[34px] font-extrabold leading-tight text-black">
-          {settings.proofTitle}
-        </h2>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-start">
+          <span />
+          <h2 className="text-center text-[34px] font-extrabold leading-tight text-black">{settings.proofTitle}</h2>
+          {total > 1 && <span className="pt-3 text-right text-[10px] font-bold uppercase tracking-wide text-[#60718b]">Page {index + 1} of {total}</span>}
+        </div>
       </header>
 
       <section className="no-break mt-8 grid grid-cols-2 gap-x-[210px] gap-y-5 px-0">
@@ -42,22 +42,10 @@ export default function A4Proof() {
       </section>
 
       <main className="no-break mt-8 flex min-h-[300px] flex-1 flex-col rounded-lg border border-dashed border-[#b9c9df] bg-slate-50/40 p-6">
-        {primary ? (
-          <>
-            <div className="flex flex-1 items-center justify-center overflow-hidden">
-              <img src={primary.dataUrl} alt={primary.name} className="max-h-[410px] max-w-full object-contain" />
-            </div>
-            {media.length > 1 && (
-              <div className="mt-5 grid grid-cols-4 gap-3">
-                {media.slice(1, 5).map((item) => (
-                  <div key={item.id} className="rounded-xl border border-slate-200 p-2">
-                    <img src={item.dataUrl} alt={item.name} className="h-20 w-full rounded-lg object-contain" />
-                    <p className="mt-1 truncate text-[9px] font-semibold uppercase tracking-wide text-slate-400">{item.label}</p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
+        {item ? (
+          <div className="flex flex-1 items-center justify-center overflow-hidden">
+            <img src={item.dataUrl} alt={item.name} className="max-h-[430px] max-w-full object-contain" />
+          </div>
         ) : (
           <div className="flex flex-1 items-center justify-center text-[22px] font-medium text-[#8da0bb]">
             Upload artwork to preview
@@ -65,17 +53,20 @@ export default function A4Proof() {
         )}
       </main>
 
-      {proof.notes && (
-        <section className="no-break mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      {item?.name && <p className="mt-3 truncate text-[10px] text-[#60718b]">{item.label}: {item.name}</p>}
+
+      {(globalNotes || itemNotes) && (
+        <section className="no-break mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
           <div className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400">Notes</div>
-          <p className="mt-2 whitespace-pre-line text-[14px] leading-6 text-slate-700">{proof.notes}</p>
+          {globalNotes && <p className="mt-2 whitespace-pre-line text-[13px] leading-5 text-slate-700">{globalNotes}</p>}
+          {itemNotes && <p className="mt-2 whitespace-pre-line text-[13px] leading-5 text-slate-700">{itemNotes}</p>}
         </section>
       )}
 
       {settings.includeSignature && (
-        <section className="no-break mt-8 border-t-2 border-slate-200 pt-6">
+        <section className="no-break mt-7 border-t-2 border-slate-200 pt-5">
           <h3 className="text-[9px] font-extrabold uppercase tracking-[0.08em] text-[#60718b]">{settings.signatureWording}</h3>
-          <div className="mt-3 flex h-[74px] items-start rounded-lg border-2 border-[#111827] bg-white px-4 py-4 text-[10px] italic text-[#8da0bb]">
+          <div className="mt-3 flex h-[68px] items-start rounded-lg border-2 border-[#111827] bg-white px-4 py-4 text-[10px] italic text-[#8da0bb]">
             Please sign here
           </div>
           <div className="mt-4 grid grid-cols-2 gap-24 text-[10px] text-[#60718b]">
@@ -113,6 +104,28 @@ export default function A4Proof() {
           </div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+export default function A4Proof() {
+  const proof = useProofStore((state) => state.proof);
+  const settings = useProofStore((state) => state.settings);
+  const media = selectedMedia(proof);
+  const pages = media.length ? media : [null];
+
+  return (
+    <div className="grid gap-8">
+      {pages.map((item, index) => (
+        <ProofPage
+          key={item?.id || "empty-proof"}
+          proof={proof}
+          settings={settings}
+          item={item}
+          index={index}
+          total={pages.length}
+        />
+      ))}
     </div>
   );
 }

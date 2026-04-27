@@ -84,6 +84,15 @@ export const useProofStore = create(
             )
           }
         })),
+      updateUpload: (key, id, patch) =>
+        set((state) => ({
+          proof: {
+            ...state.proof,
+            [key]: (state.proof[key] || []).map((item) =>
+              item.id === id ? { ...item, ...patch } : item
+            )
+          }
+        })),
       reorderUpload: (key, fromId, toId) =>
         set((state) => ({
           proof: { ...mergeProof(state.proof), [key]: reorder(state.proof[key] || [], fromId, toId) }

@@ -9,6 +9,7 @@ export default function UploadSection({ title, storageKey, helper }) {
   const addUploads = useProofStore((state) => state.addUploads);
   const removeUpload = useProofStore((state) => state.removeUpload);
   const toggleUpload = useProofStore((state) => state.toggleUpload);
+  const updateUpload = useProofStore((state) => state.updateUpload);
   const reorderUpload = useProofStore((state) => state.reorderUpload);
   const [dragId, setDragId] = useState(null);
 
@@ -45,7 +46,7 @@ export default function UploadSection({ title, storageKey, helper }) {
         <p className="mt-3 text-sm font-semibold text-slate-700 dark:text-slate-200">
           Drag & drop or click to upload
         </p>
-        <p className="text-xs font-medium text-slate-500">Supports JPG, PNG • Multiple files allowed</p>
+        <p className="text-xs font-medium text-slate-500">Supports JPG, PNG - Multiple files allowed</p>
       </div>
 
       {items.length > 0 && (
@@ -60,30 +61,39 @@ export default function UploadSection({ title, storageKey, helper }) {
                 if (dragId) reorderUpload(storageKey, dragId, item.id);
                 setDragId(null);
               }}
-              className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+              className="grid gap-2 rounded-lg border border-slate-200 bg-white p-2 shadow-sm dark:border-slate-700 dark:bg-slate-900"
             >
-              <GripVertical className="h-4 w-4 shrink-0 text-slate-400" />
-              <img src={item.dataUrl} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-semibold text-slate-800 dark:text-slate-100">{item.name}</p>
-                <label className="mt-1 flex items-center gap-2 text-xs text-slate-500">
-                  <input
-                    type="checkbox"
-                    checked={item.selected}
-                    onChange={() => toggleUpload(storageKey, item.id)}
-                    className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
-                  />
-                  Include in proof
-                </label>
+              <div className="flex items-center gap-3">
+                <GripVertical className="h-4 w-4 shrink-0 text-slate-400" />
+                <img src={item.dataUrl} alt="" className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-xs font-semibold text-slate-800 dark:text-slate-100">{item.name}</p>
+                  <label className="mt-1 flex items-center gap-2 text-xs text-slate-500">
+                    <input
+                      type="checkbox"
+                      checked={item.selected}
+                      onChange={() => toggleUpload(storageKey, item.id)}
+                      className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500"
+                    />
+                    Include in proof
+                  </label>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removeUpload(storageKey, item.id)}
+                  className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
+                  aria-label={`Remove ${item.name}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => removeUpload(storageKey, item.id)}
-                className="rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10"
-                aria-label={`Remove ${item.name}`}
-              >
-                <Trash2 className="h-4 w-4" />
-              </button>
+              <textarea
+                value={item.notes || ""}
+                onChange={(event) => updateUpload(storageKey, item.id, { notes: event.target.value })}
+                rows={2}
+                className="w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 outline-none focus:border-slate-400 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+                placeholder="Notes for this image..."
+              />
             </article>
           ))}
         </div>

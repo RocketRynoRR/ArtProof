@@ -182,10 +182,15 @@ export const generateProofPdf = async (proof, settings) => {
     }
     y -= artworkHeight + 28;
 
-    if (proof.notes) {
+    const noteLines = [
+      ...wrapText(proof.notes, fonts.regular, settings.bodySize, contentWidth),
+      ...wrapText(item?.notes, fonts.regular, settings.bodySize, contentWidth)
+    ].filter(Boolean);
+
+    if (noteLines.length) {
       page.drawText("NOTES", { x: margin, y, size: settings.labelSize, font: fonts.bold, color: rgb(0.44, 0.49, 0.57) });
       y -= 15;
-      wrapText(proof.notes, fonts.regular, settings.bodySize, contentWidth).slice(0, 5).forEach((line) => {
+      noteLines.slice(0, 8).forEach((line) => {
         page.drawText(line, { x: margin, y, size: settings.bodySize, font: fonts.regular, color: rgb(0.18, 0.22, 0.28) });
         y -= 14;
       });

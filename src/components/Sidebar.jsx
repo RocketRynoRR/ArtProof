@@ -60,7 +60,7 @@ export default function Sidebar({ onOpenSettings }) {
           type="button"
           disabled={!canGenerate}
           onClick={() => generateProofPdf(proof, settings)}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#f8c983] px-5 py-3 text-sm font-bold text-white shadow-lg shadow-amber-200/70 transition hover:bg-[#f2bd6d] disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none dark:text-slate-950"
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#e7b45e] bg-[#f8c983] px-5 py-3 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-[#f3be70] disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
         >
           <Download className="h-4 w-4" />
           Generate PDF
