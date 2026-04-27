@@ -37,7 +37,7 @@ export default function Preview() {
           <span className="w-12 text-right text-sm font-bold text-slate-700 dark:text-slate-200">{zoom}%</span>
         </div>
       </div>
-      <div className="h-[calc(100vh-178px)] overflow-auto rounded-b-2xl bg-slate-50 p-8 pb-14 dark:bg-slate-900 lg:h-[calc(100vh-156px)]">
+      <div className="h-[calc(100vh-212px)] overflow-auto rounded-b-2xl bg-slate-50 p-8 pb-14 dark:bg-slate-900 lg:h-[calc(100vh-190px)]">
         <div className="mx-auto w-fit origin-top transition-transform" style={{ transform: `scale(${zoom / 100})` }}>
           <A4Proof />
         </div>

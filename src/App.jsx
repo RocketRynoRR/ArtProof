@@ -42,10 +42,14 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto flex h-[calc(100vh-74px)] max-w-[1880px] flex-col gap-5 overflow-hidden px-4 pb-6 pt-4 sm:px-4 lg:flex-row">
+      <main className="mx-auto flex h-[calc(100vh-108px)] max-w-[1880px] flex-col gap-5 overflow-hidden px-4 pb-4 pt-4 sm:px-4 lg:flex-row">
         <Sidebar onOpenSettings={() => setSettingsOpen(true)} />
         <Preview />
       </main>
+
+      <footer className="border-t border-slate-200 bg-white px-4 py-2 text-center text-xs font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
+        Jigsaw Signs & Print - Artwork Proof Generator
+      </footer>
 
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>

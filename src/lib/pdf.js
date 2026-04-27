@@ -157,10 +157,25 @@ export const generateProofPdf = async (proof, settings) => {
     page.drawLine({ start: { x: margin, y: footerY + 48 }, end: { x: A4.width - margin, y: footerY + 48 }, thickness: 0.6, color: rgb(0.82, 0.86, 0.9) });
     await drawLogo(pdfDoc, page, settings, margin, footerY, 120, 34, fonts);
     const contactX = A4.width - margin - 160;
-    page.drawText(settings.address || "", { x: contactX, y: footerY + 28, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.phone || "", { x: contactX, y: footerY + 17, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.email || "", { x: contactX, y: footerY + 6, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
-    page.drawText(settings.website || "", { x: contactX, y: footerY - 5, size: 7, font: fonts.regular, color: rgb(0.25, 0.32, 0.42), maxWidth: 160 });
+    const rightText = [
+      settings.address,
+      settings.phone,
+      settings.email,
+      settings.website
+    ].filter(Boolean);
+
+    rightText.forEach((text, index) => {
+      const size = 7;
+      const width = fonts.regular.widthOfTextAtSize(text, size);
+      page.drawText(text, {
+        x: A4.width - margin - Math.min(width, 160),
+        y: footerY + 28 - index * 11,
+        size,
+        font: fonts.regular,
+        color: rgb(0.25, 0.32, 0.42),
+        maxWidth: 160
+      });
+    });
   };
 
   const drawProofPage = async (item, index, total) => {
