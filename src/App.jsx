@@ -9,10 +9,15 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const darkMode = useProofStore((state) => state.darkMode);
   const setDarkMode = useProofStore((state) => state.setDarkMode);
+  const resetDraft = useProofStore((state) => state.resetDraft);
 
   useEffect(() => {
     document.documentElement.classList.toggle("dark", darkMode);
   }, [darkMode]);
+
+  useEffect(() => {
+    resetDraft();
+  }, [resetDraft]);
 
   return (
     <div className="app-shell h-screen overflow-hidden bg-slate-50 text-ink transition dark:bg-slate-950 dark:text-slate-100">
