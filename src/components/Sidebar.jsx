@@ -1,4 +1,4 @@
-import { Download, Settings } from "lucide-react";
+import { Download, RotateCcw, Settings } from "lucide-react";
 import UploadSection from "./UploadSection";
 import { useProofStore } from "../store/useProofStore";
 import { generateProofPdf } from "../lib/pdf";
@@ -9,6 +9,7 @@ export default function Sidebar({ onOpenSettings }) {
   const proof = useProofStore((state) => state.proof);
   const settings = useProofStore((state) => state.settings);
   const setProofField = useProofStore((state) => state.setProofField);
+  const resetDraft = useProofStore((state) => state.resetDraft);
   const canGenerate = proof.clientName && proof.jobNumber && proof.revisionNumber;
 
   return (
@@ -47,7 +48,20 @@ export default function Sidebar({ onOpenSettings }) {
         <UploadSection title="Site / Location Photos" storageKey="sitePhotos" helper="Optional install/location context. Selected photos also get their own pages." />
       </div>
 
-      <div className="grid grid-cols-[auto_1fr] gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
+      <div className="grid grid-cols-[auto_auto_1fr] gap-3 border-t border-slate-200 bg-white/95 p-4 backdrop-blur dark:border-slate-800 dark:bg-slate-950/95">
+        <button
+          type="button"
+          onClick={() => {
+            if (window.confirm("Clear all proof details and uploaded images?")) {
+              resetDraft();
+            }
+          }}
+          className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-800 shadow-sm transition hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          aria-label="Clear proof"
+          title="Clear proof"
+        >
+          <RotateCcw className="h-4 w-4" />
+        </button>
         <button
           type="button"
           onClick={onOpenSettings}
