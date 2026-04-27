@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { defaultProof, defaultSettings, todayIso } from "../lib/defaults";
+import { isSupabaseConfigured } from "../lib/supabase";
+import { loadCloudSettings, saveCloudSettings } from "../lib/settingsCloud";
 
 const mergeProof = (proof = {}) => ({
   ...defaultProof,
@@ -29,11 +31,39 @@ export const useProofStore = create(
       proof: mergeProof(),
       settings: mergeSettings(),
       darkMode: false,
+      settingsSyncStatus: isSupabaseConfigured ? "ready" : "not-configured",
+      settingsSyncError: "",
       setProofField: (field, value) =>
         set((state) => ({ proof: { ...state.proof, [field]: value } })),
       setSettings: (patch) =>
         set((state) => ({ settings: { ...state.settings, ...patch } })),
       setDarkMode: (darkMode) => set({ darkMode }),
+      loadSettingsFromCloud: async () => {
+        set({ settingsSyncStatus: "loading", settingsSyncError: "" });
+        try {
+          const result = await loadCloudSettings();
+          if (result.skipped) {
+            set({ settingsSyncStatus: "not-configured" });
+            return;
+          }
+          set((state) => ({
+            settings: result.settings ? mergeSettings(result.settings) : state.settings,
+            settingsSyncStatus: result.settings ? "loaded" : "empty"
+          }));
+        } catch (error) {
+          set({ settingsSyncStatus: "error", settingsSyncError: error.message });
+        }
+      },
+      saveSettingsToCloud: async () => {
+        set({ settingsSyncStatus: "saving", settingsSyncError: "" });
+        try {
+          const settings = useProofStore.getState().settings;
+          const result = await saveCloudSettings(settings);
+          set({ settingsSyncStatus: result.skipped ? "not-configured" : "saved" });
+        } catch (error) {
+          set({ settingsSyncStatus: "error", settingsSyncError: error.message });
+        }
+      },
       addUploads: (key, uploads) =>
         set((state) => ({
           proof: { ...mergeProof(state.proof), [key]: [...(state.proof[key] || []), ...uploads] }

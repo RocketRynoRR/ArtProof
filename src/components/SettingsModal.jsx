@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { fileToDataUrl } from "../lib/files";
 import { defaultSettings } from "../lib/defaults";
 import { useProofStore } from "../store/useProofStore";
+import { isSupabaseConfigured } from "../lib/supabase";
 
 const Field = ({ label, children }) => (
   <label className="grid gap-1.5">
@@ -14,6 +15,10 @@ const Field = ({ label, children }) => (
 export default function SettingsModal({ open, onClose }) {
   const settings = useProofStore((state) => state.settings);
   const setSettings = useProofStore((state) => state.setSettings);
+  const syncStatus = useProofStore((state) => state.settingsSyncStatus);
+  const syncError = useProofStore((state) => state.settingsSyncError);
+  const loadSettingsFromCloud = useProofStore((state) => state.loadSettingsFromCloud);
+  const saveSettingsToCloud = useProofStore((state) => state.saveSettingsToCloud);
 
   const { getRootProps, getInputProps } = useDropzone({
     accept: { "image/png": [".png"], "image/jpeg": [".jpg", ".jpeg"] },
@@ -39,6 +44,41 @@ export default function SettingsModal({ open, onClose }) {
         </header>
 
         <div className="grid gap-6 overflow-auto p-5 lg:grid-cols-2">
+          <section className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-900 lg:col-span-2">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h3 className="text-sm font-extrabold uppercase tracking-wide text-slate-500">Supabase Settings Sync</h3>
+                <p className="mt-1 text-sm text-slate-500">
+                  {isSupabaseConfigured
+                    ? "Cloud settings are available for this project."
+                    : "Add Supabase environment variables to enable cloud settings."}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  disabled={!isSupabaseConfigured || syncStatus === "loading"}
+                  onClick={loadSettingsFromCloud}
+                  className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+                >
+                  Load
+                </button>
+                <button
+                  type="button"
+                  disabled={!isSupabaseConfigured || syncStatus === "saving"}
+                  onClick={saveSettingsToCloud}
+                  className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50 dark:bg-white dark:text-slate-950"
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              Status: {syncStatus}
+            </p>
+            {syncError && <p className="text-sm text-rose-600">{syncError}</p>}
+          </section>
+
           <section className="space-y-4">
             <h3 className="text-sm font-extrabold uppercase tracking-wide text-slate-500">Company</h3>
             <div {...getRootProps()} className="cursor-pointer rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center dark:border-slate-700 dark:bg-slate-900">

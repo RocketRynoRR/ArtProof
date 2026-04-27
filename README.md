@@ -25,4 +25,15 @@ npm run dev
 This repository is configured for GitHub Pages deployment through `.github/workflows/deploy.yml`.
 In GitHub, set **Settings > Pages > Build and deployment > Source** to **GitHub Actions**.
 
+## Supabase Settings
+
+Create the table and policies in `supabase/schema.sql`, then add these variables locally or in GitHub Pages environment/secrets:
+
+```bash
+VITE_SUPABASE_URL=your-project-url
+VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-or-anon-key
+```
+
+The app still saves settings locally first. Supabase sync is available from the Settings modal when those variables are configured.
+
 The app is intentionally structured with local storage first so it can later grow into online approvals, proof sharing, saved proof history, accounts, cloud storage, and database-backed workflows.
