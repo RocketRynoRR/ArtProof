@@ -13,6 +13,9 @@ const formatSavedAt = (value) =>
     minute: "2-digit"
   });
 
+const getProofThumbnail = (proof) =>
+  [...(proof.artwork || []), ...(proof.sitePhotos || [])].find((item) => item.selected)?.dataUrl || "";
+
 export default function HistorySidebar({ open, onClose }) {
   const proof = useProofStore((state) => state.proof);
   const loadProof = useProofStore((state) => state.loadProof);
@@ -107,13 +110,20 @@ export default function HistorySidebar({ open, onClose }) {
           <div className="grid gap-3">
             {entries.map((entry) => (
               <article key={entry.id} className="rounded-lg border border-slate-200 p-3 dark:border-slate-800">
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start gap-3">
+                  <div className="artwork-checkerboard flex h-16 w-14 shrink-0 items-center justify-center overflow-hidden rounded border border-slate-300 dark:border-slate-700">
+                    {getProofThumbnail(entry.proof) ? (
+                      <img src={getProofThumbnail(entry.proof)} alt="" className="h-full w-full object-contain" />
+                    ) : (
+                      <span className="px-1 text-center text-[9px] font-bold uppercase text-slate-400">No image</span>
+                    )}
+                  </div>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-extrabold text-slate-900 dark:text-white">{entry.clientName}</p>
                     <p className="mt-0.5 text-xs font-semibold text-slate-600 dark:text-slate-300">Job {entry.jobNumber} {entry.revisionNumber ? `- ${entry.revisionNumber}` : ""}</p>
                     <p className="mt-1 text-[11px] text-slate-400">{formatSavedAt(entry.updatedAt)}</p>
                   </div>
-                  {entry.parentId && <span className="rounded bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase text-slate-500 dark:bg-slate-900">Sub-proof</span>}
+                  {entry.parentId && <span className="ml-auto rounded bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase text-slate-500 dark:bg-slate-900">Sub-proof</span>}
                 </div>
                 <div className="mt-3 grid grid-cols-[1fr_1fr_auto] gap-2">
                   <button type="button" onClick={() => { loadProof(entry.proof); onClose(); }} className="rounded-lg border border-slate-200 px-2 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-900">Open</button>

@@ -48,13 +48,13 @@ select {
 
 .artwork-checkerboard {
   background-color: #d8dee8;
-  background-image:
-    linear-gradient(45deg, #f8fafc 25%, transparent 25%),
-    linear-gradient(-45deg, #f8fafc 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #f8fafc 75%),
-    linear-gradient(-45deg, transparent 75%, #f8fafc 75%);
-  background-position: 0 0, 0 12px, 12px -12px, -12px 0;
-  background-size: 24px 24px;
+  background-image: conic-gradient(
+    #f8fafc 25%,
+    #d8dee8 0 50%,
+    #f8fafc 0 75%,
+    #d8dee8 0
+  );
+  background-size: 10% 20%;
 }
 
 .no-break {

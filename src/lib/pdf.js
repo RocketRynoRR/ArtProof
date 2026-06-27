@@ -113,16 +113,19 @@ const drawImageContain = async (pdfDoc, page, item, box, options = {}) => {
 };
 
 const drawCheckerboard = (page, box) => {
-  const tile = 18;
+  const columns = 12;
+  const tileWidth = box.width / columns;
+  const rows = Math.max(1, Math.round(box.height / tileWidth));
+  const tileHeight = box.height / rows;
   page.drawRectangle({ ...box, color: rgb(0.84, 0.87, 0.91) });
-  for (let row = 0; row < Math.ceil(box.height / tile); row += 1) {
-    for (let column = 0; column < Math.ceil(box.width / tile); column += 1) {
+  for (let row = 0; row < rows; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
       if ((row + column) % 2 === 0) {
         page.drawRectangle({
-          x: box.x + column * tile,
-          y: box.y + row * tile,
-          width: Math.min(tile, box.width - column * tile),
-          height: Math.min(tile, box.height - row * tile),
+          x: box.x + column * tileWidth,
+          y: box.y + row * tileHeight,
+          width: tileWidth,
+          height: tileHeight,
           color: rgb(0.97, 0.98, 0.99)
         });
       }
