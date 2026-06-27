@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Download, RotateCcw, Settings } from "lucide-react";
 import UploadSection from "./UploadSection";
 import { useProofStore } from "../store/useProofStore";
 import { generateProofPdf } from "../lib/pdf";
+import { saveProofHistory } from "../lib/proofHistory";
 
 const noteLines = (value) => value.split(/\r?\n/).slice(0, 5).join("\n");
 
@@ -10,6 +12,8 @@ export default function Sidebar({ onOpenSettings }) {
   const settings = useProofStore((state) => state.settings);
   const setProofField = useProofStore((state) => state.setProofField);
   const resetDraft = useProofStore((state) => state.resetDraft);
+  const loadProof = useProofStore((state) => state.loadProof);
+  const [isGenerating, setIsGenerating] = useState(false);
   const selectedUploads = [...(proof.artwork || []), ...(proof.sitePhotos || [])].filter((item) => item.selected);
   const dimensionsComplete = selectedUploads.every(
     (item) => Number(item.widthMm) > 0 && Number(item.heightMm) > 0
@@ -21,6 +25,23 @@ export default function Sidebar({ onOpenSettings }) {
     selectedUploads.length &&
     dimensionsComplete
   );
+
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    let proofToGenerate = proof;
+    try {
+      const entry = await saveProofHistory(proof);
+      proofToGenerate = entry.proof;
+      loadProof(entry.proof);
+    } catch (error) {
+      console.warn("Proof history could not be saved.", error);
+    }
+    try {
+      await generateProofPdf(proofToGenerate, settings);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-panel dark:border-slate-800 dark:bg-slate-950 lg:w-[430px] lg:shrink-0">
@@ -81,12 +102,12 @@ export default function Sidebar({ onOpenSettings }) {
         </button>
         <button
           type="button"
-          disabled={!canGenerate}
-          onClick={() => generateProofPdf(proof, settings)}
+          disabled={!canGenerate || isGenerating}
+          onClick={handleGenerate}
           className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#e7b45e] bg-[#f8c983] px-5 py-3 text-sm font-bold text-slate-950 shadow-sm transition hover:bg-[#f3be70] disabled:cursor-not-allowed disabled:border-slate-300 disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
         >
           <Download className="h-4 w-4" />
-          Generate PDF
+          {isGenerating ? "Generating..." : "Generate PDF"}
         </button>
         {!dimensionsComplete && selectedUploads.length > 0 && (
           <p className="col-span-3 text-center text-xs font-semibold text-rose-600">Enter width and height for every included upload.</p>

@@ -34,6 +34,9 @@ export const defaultSettings = {
 };
 
 export const defaultProof = {
+  historyId: "",
+  historyGroupId: "",
+  historyParentId: "",
   clientName: "",
   jobNumber: "",
   currentDate: todayIso(),

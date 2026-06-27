@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { Moon, Sun } from "lucide-react";
+import { History, Moon, Sun } from "lucide-react";
 import Sidebar from "./components/Sidebar";
 import Preview from "./components/Preview";
 import SettingsModal from "./components/SettingsModal";
+import HistorySidebar from "./components/HistorySidebar";
 import { useProofStore } from "./store/useProofStore";
 
 export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const darkMode = useProofStore((state) => state.darkMode);
   const setDarkMode = useProofStore((state) => state.setDarkMode);
   const resetDraft = useProofStore((state) => state.resetDraft);
@@ -37,13 +39,22 @@ export default function App() {
               Create professional PDF proofs with client approval
             </p>
           </div>
-          <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="inline-flex w-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 sm:w-24"
-          >
-            {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            <span className="hidden sm:inline">{darkMode ? "Light" : "Dark"}</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setHistoryOpen(true)}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+            >
+              <History className="h-4 w-4" /> <span className="hidden sm:inline">History</span>
+            </button>
+            <button
+              onClick={() => setDarkMode(!darkMode)}
+              className="inline-flex w-10 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 sm:w-24"
+            >
+              {darkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              <span className="hidden sm:inline">{darkMode ? "Light" : "Dark"}</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -57,6 +68,7 @@ export default function App() {
       </footer>
 
       <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <HistorySidebar open={historyOpen} onClose={() => setHistoryOpen(false)} />
     </div>
   );
 }

@@ -35,6 +35,7 @@ export const useProofStore = create(
       settingsSyncError: "",
       setProofField: (field, value) =>
         set((state) => ({ proof: { ...state.proof, [field]: value } })),
+      loadProof: (proof) => set({ proof: mergeProof(proof) }),
       setSettings: (patch) =>
         set((state) => ({ settings: { ...state.settings, ...patch } })),
       setDarkMode: (darkMode) => set({ darkMode }),
