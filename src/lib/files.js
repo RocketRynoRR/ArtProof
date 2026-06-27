@@ -14,6 +14,8 @@ export const makeUpload = async (file, type = "artwork") => ({
   mime: file.type,
   selected: true,
   notes: "",
+  widthMm: "",
+  heightMm: "",
   dataUrl: await fileToDataUrl(file)
 });
 

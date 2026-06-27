@@ -10,7 +10,17 @@ export default function Sidebar({ onOpenSettings }) {
   const settings = useProofStore((state) => state.settings);
   const setProofField = useProofStore((state) => state.setProofField);
   const resetDraft = useProofStore((state) => state.resetDraft);
-  const canGenerate = proof.clientName && proof.jobNumber && proof.revisionNumber;
+  const selectedUploads = [...(proof.artwork || []), ...(proof.sitePhotos || [])].filter((item) => item.selected);
+  const dimensionsComplete = selectedUploads.every(
+    (item) => Number(item.widthMm) > 0 && Number(item.heightMm) > 0
+  );
+  const canGenerate = Boolean(
+    proof.clientName &&
+    proof.jobNumber &&
+    proof.revisionNumber &&
+    selectedUploads.length &&
+    dimensionsComplete
+  );
 
   return (
     <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-panel dark:border-slate-800 dark:bg-slate-950 lg:w-[430px] lg:shrink-0">
@@ -43,7 +53,7 @@ export default function Sidebar({ onOpenSettings }) {
           <span className="text-right text-xs text-slate-500">{proof.notes.length}/520 - Max 5 lines</span>
         </label>
 
-        <UploadSection title="Artwork Images (JPEG/PNG) *" storageKey="artwork" helper="Each selected image will generate its own PDF page." />
+        <UploadSection title="Artwork Images / PDFs *" storageKey="artwork" acceptPdf helper="PDF pages are rasterized. Each selected item generates its own proof page." />
         <UploadSection title="Site / Location Photos" storageKey="sitePhotos" helper="Optional install/location context. Selected photos also get their own pages." />
       </div>
 
@@ -78,6 +88,9 @@ export default function Sidebar({ onOpenSettings }) {
           <Download className="h-4 w-4" />
           Generate PDF
         </button>
+        {!dimensionsComplete && selectedUploads.length > 0 && (
+          <p className="col-span-3 text-center text-xs font-semibold text-rose-600">Enter width and height for every included upload.</p>
+        )}
       </div>
     </aside>
   );

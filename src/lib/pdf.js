@@ -68,16 +68,56 @@ const embedImage = async (pdfDoc, item) => {
   return pdfDoc.embedJpg(bytes);
 };
 
-const drawImageContain = async (pdfDoc, page, item, box) => {
+const drawImageContain = async (pdfDoc, page, item, box, options = {}) => {
   const image = await embedImage(pdfDoc, item);
   const scale = Math.min(box.width / image.width, box.height / image.height);
   const width = image.width * scale;
   const height = image.height * scale;
+  const x = box.x + (box.width - width) / 2;
+  const y = box.y + (box.height - height) / 2;
+  if (options.frame) {
+    page.drawRectangle({
+      x: x - 1.5,
+      y: y - 1.5,
+      width: width + 3,
+      height: height + 3,
+      color: rgb(1, 1, 1),
+      borderColor: rgb(0.2, 0.24, 0.3),
+      borderWidth: 1.5
+    });
+  }
   page.drawImage(image, {
-    x: box.x + (box.width - width) / 2,
-    y: box.y + (box.height - height) / 2,
+    x,
+    y,
     width,
     height
+  });
+  return { x, y, width, height };
+};
+
+const drawCheckerboard = (page, box) => {
+  const tile = 18;
+  page.drawRectangle({ ...box, color: rgb(0.84, 0.87, 0.91) });
+  for (let row = 0; row < Math.ceil(box.height / tile); row += 1) {
+    for (let column = 0; column < Math.ceil(box.width / tile); column += 1) {
+      if ((row + column) % 2 === 0) {
+        page.drawRectangle({
+          x: box.x + column * tile,
+          y: box.y + row * tile,
+          width: Math.min(tile, box.width - column * tile),
+          height: Math.min(tile, box.height - row * tile),
+          color: rgb(0.97, 0.98, 0.99)
+        });
+      }
+    }
+  }
+  page.drawRectangle({
+    x: box.x,
+    y: box.y,
+    width: box.width,
+    height: box.height,
+    borderColor: rgb(0.35, 0.4, 0.48),
+    borderWidth: 1.2
   });
 };
 
@@ -183,7 +223,8 @@ export const generateProofPdf = async (proof, settings) => {
     let y = drawPageHeader(page, settings.proofTitle || "Artwork Proof", total > 1 ? `Artwork ${index + 1} of ${total}` : "");
 
     const artworkHeight = settings.includeSignature ? 318 : 395;
-    page.drawRectangle({ x: margin, y: y - artworkHeight, width: contentWidth, height: artworkHeight, borderColor: rgb(0.83, 0.86, 0.9), borderWidth: 1, color: rgb(0.98, 0.99, 1) });
+    const artworkBox = { x: margin, y: y - artworkHeight, width: contentWidth, height: artworkHeight };
+    drawCheckerboard(page, artworkBox);
 
     if (item) {
       await drawImageContain(pdfDoc, page, item, {
@@ -191,14 +232,23 @@ export const generateProofPdf = async (proof, settings) => {
         y: y - artworkHeight + 22,
         width: contentWidth - 44,
         height: artworkHeight - 44
-      });
+      }, { frame: true });
       page.drawText(item.name || item.heading || "Uploaded artwork", {
         x: margin,
-        y: y - artworkHeight - 12,
+        y: y - artworkHeight - 24,
         size: 7,
         font: fonts.regular,
         color: rgb(0.44, 0.49, 0.57),
         maxWidth: contentWidth
+      });
+      const sizeText = `PRODUCT SIZE: ${item.widthMm} x ${item.heightMm} mm`;
+      const sizeWidth = fonts.bold.widthOfTextAtSize(sizeText, 8);
+      page.drawText(sizeText, {
+        x: A4.width - margin - sizeWidth,
+        y: y - artworkHeight - 12,
+        size: 8,
+        font: fonts.bold,
+        color: rgb(0.12, 0.15, 0.2)
       });
     } else {
       const placeholder = "Upload artwork to preview";
@@ -210,7 +260,7 @@ export const generateProofPdf = async (proof, settings) => {
         color: rgb(0.48, 0.54, 0.62)
       });
     }
-    y -= artworkHeight + 28;
+    y -= artworkHeight + 44;
 
     const noteLines = [
       ...wrapText(proof.notes, fonts.regular, settings.bodySize, contentWidth),

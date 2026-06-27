@@ -102,6 +102,10 @@ export const useProofStore = create(
     {
       name: "jigsaw-artwork-proof-draft",
       version: 2,
+      partialize: (state) => ({
+        settings: state.settings,
+        darkMode: state.darkMode
+      }),
       merge: (persisted, current) => ({
         ...current,
         ...(persisted || {}),

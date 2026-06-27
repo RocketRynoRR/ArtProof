@@ -41,10 +41,10 @@ function ProofPage({ proof, settings, item, index, total }) {
         <Detail label="Revision" value={proof.revisionNumber} />
       </section>
 
-      <main className="no-break mt-8 flex min-h-[300px] flex-1 flex-col rounded-lg border border-dashed border-[#b9c9df] bg-slate-50/40 p-6">
+      <main className="artwork-checkerboard no-break mt-8 flex min-h-[300px] flex-1 flex-col rounded-lg border-2 border-slate-500 p-6">
         {item ? (
           <div className="flex flex-1 items-center justify-center overflow-hidden">
-            <img src={item.dataUrl} alt={item.name} className="max-h-[430px] max-w-full object-contain" />
+            <img src={item.dataUrl} alt={item.name} className="max-h-[430px] max-w-full bg-white object-contain shadow-lg ring-2 ring-slate-700" />
           </div>
         ) : (
           <div className="flex flex-1 items-center justify-center text-[22px] font-medium text-[#8da0bb]">
@@ -53,7 +53,12 @@ function ProofPage({ proof, settings, item, index, total }) {
         )}
       </main>
 
-      {item?.name && <p className="mt-3 truncate text-[10px] text-[#60718b]">{item.label}: {item.name}</p>}
+      {item?.name && (
+        <div className="mt-3 flex items-center justify-between gap-4 border-b border-slate-200 pb-3 text-[10px] text-[#60718b]">
+          <p className="min-w-0 truncate">{item.label}: {item.name}</p>
+          <p className="shrink-0 font-extrabold uppercase text-slate-900">Product size: {item.widthMm} x {item.heightMm} mm</p>
+        </div>
+      )}
 
       {(globalNotes || itemNotes) && (
         <section className="no-break mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4">
