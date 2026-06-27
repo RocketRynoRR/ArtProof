@@ -3,6 +3,18 @@ import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
+// Keep rasterization compatible with browsers that lack this typed-array API.
+if (typeof Uint8Array.prototype.toHex !== "function") {
+  Object.defineProperty(Uint8Array.prototype, "toHex", {
+    configurable: true,
+    value() {
+      let hex = "";
+      for (const byte of this) hex += byte.toString(16).padStart(2, "0");
+      return hex;
+    }
+  });
+}
+
 const canvasToDataUrl = (canvas) => canvas.toDataURL("image/png");
 
 export async function rasterizePdf(file, type = "artwork") {
@@ -33,6 +45,7 @@ export async function rasterizePdf(file, type = "artwork") {
         size: file.size,
         mime: "image/png",
         sourceMime: "application/pdf",
+        orientationNormalized: true,
         selected: true,
         notes: "",
         widthMm: "",

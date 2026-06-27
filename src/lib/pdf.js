@@ -1,5 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
-import { proofFilename } from "./files";
+import { normalizeImageFile, proofFilename } from "./files";
 
 const A4 = { width: 595.28, height: 841.89 };
 
@@ -13,6 +13,13 @@ const dataUrlBytes = (dataUrl) => {
   const base64 = dataUrl.split(",")[1];
   const binary = atob(base64);
   return Uint8Array.from(binary, (char) => char.charCodeAt(0));
+};
+
+const sourceBytes = async (source) => {
+  if (source.startsWith("data:")) return dataUrlBytes(source);
+  const response = await fetch(source);
+  if (!response.ok) throw new Error("The company logo could not be loaded.");
+  return new Uint8Array(await response.arrayBuffer());
 };
 
 const formatDate = (value) => {
@@ -61,8 +68,18 @@ const drawLabelValue = (page, fonts, label, value, x, y, width, settings) => {
 };
 
 const embedImage = async (pdfDoc, item) => {
-  const bytes = dataUrlBytes(item.dataUrl);
-  if (item.mime?.includes("png") || item.dataUrl.startsWith("data:image/png")) {
+  let dataUrl = item.dataUrl;
+  let mime = item.mime;
+
+  if (!item.orientationNormalized && (mime?.includes("jpeg") || mime?.includes("jpg") || dataUrl.startsWith("data:image/jpeg"))) {
+    const sourceBlob = await fetch(dataUrl).then((response) => response.blob());
+    const normalized = await normalizeImageFile(sourceBlob);
+    dataUrl = normalized.dataUrl;
+    mime = normalized.mime;
+  }
+
+  const bytes = await sourceBytes(dataUrl);
+  if (mime?.includes("png") || dataUrl.startsWith("data:image/png") || /\.png(?:\?|$)/i.test(dataUrl)) {
     return pdfDoc.embedPng(bytes);
   }
   return pdfDoc.embedJpg(bytes);
@@ -139,7 +156,16 @@ const drawLogo = async (pdfDoc, page, settings, x, y, maxWidth, maxHeight, fonts
     return;
   }
   try {
-    await drawImageContain(pdfDoc, page, { dataUrl: settings.logo, mime: settings.logo.slice(5, 15) }, { x, y, width: maxWidth, height: maxHeight });
+    await drawImageContain(
+      pdfDoc,
+      page,
+      {
+        dataUrl: settings.logo,
+        mime: settings.logo.startsWith("data:image/jpeg") ? "image/jpeg" : "image/png",
+        orientationNormalized: true
+      },
+      { x, y, width: maxWidth, height: maxHeight }
+    );
   } catch {
     page.drawText(settings.name, { x, y: y + 15, size: 13, font: fonts.bold, color: hexToRgb(settings.brandColor) });
   }
@@ -306,9 +332,20 @@ export const generateProofPdf = async (proof, settings) => {
     const disclaimer = pdfDoc.addPage([A4.width, A4.height]);
     let dy = drawPageHeader(disclaimer, settings.disclaimerHeading || "Artwork Disclaimer", "Disclaimer");
     dy -= 10;
-    wrapText(settings.disclaimerText, fonts.regular, 12, contentWidth).forEach((line) => {
-      disclaimer.drawText(line, { x: margin, y: dy, size: 12, font: fonts.regular, color: rgb(0.16, 0.19, 0.25) });
-      dy -= 22;
+    let disclaimerSize = 10;
+    let disclaimerLineHeight = 16;
+    let disclaimerLines = wrapText(settings.disclaimerText, fonts.regular, disclaimerSize, contentWidth);
+    const availableHeight = dy - 92;
+
+    while (disclaimerLines.length * disclaimerLineHeight > availableHeight && disclaimerSize > 7) {
+      disclaimerSize -= 0.5;
+      disclaimerLineHeight = disclaimerSize + 5;
+      disclaimerLines = wrapText(settings.disclaimerText, fonts.regular, disclaimerSize, contentWidth);
+    }
+
+    disclaimerLines.forEach((line) => {
+      disclaimer.drawText(line, { x: margin, y: dy, size: disclaimerSize, font: fonts.regular, color: rgb(0.16, 0.19, 0.25) });
+      dy -= disclaimerLineHeight;
     });
     await drawPageFooter(disclaimer);
   }

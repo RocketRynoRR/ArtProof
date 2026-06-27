@@ -13,7 +13,11 @@ const mergeProof = (proof = {}) => ({
   sitePhotos: Array.isArray(proof.sitePhotos) ? proof.sitePhotos : []
 });
 
-const mergeSettings = (settings = {}) => ({ ...defaultSettings, ...settings });
+const mergeSettings = (settings = {}) => ({
+  ...defaultSettings,
+  ...settings,
+  logo: settings.logo || defaultSettings.logo
+});
 
 const reorder = (items, fromId, toId) => {
   const from = items.findIndex((item) => item.id === fromId);
@@ -102,7 +106,7 @@ export const useProofStore = create(
     }),
     {
       name: "jigsaw-artwork-proof-draft",
-      version: 2,
+      version: 3,
       partialize: (state) => ({
         settings: state.settings,
         darkMode: state.darkMode
@@ -113,11 +117,33 @@ export const useProofStore = create(
         settings: mergeSettings(persisted?.settings),
         proof: mergeProof(persisted?.proof)
       }),
-      migrate: (persisted) => ({
-        ...persisted,
-        settings: mergeSettings(persisted?.settings),
-        proof: mergeProof(persisted?.proof)
-      })
+      migrate: (persisted, version) => {
+        const settings = mergeSettings(persisted?.settings);
+        const migratedSettings = (version ?? 0) < 3
+          ? {
+              ...settings,
+              logo: defaultSettings.logo,
+              name: defaultSettings.name,
+              address: defaultSettings.address,
+              phone: defaultSettings.phone,
+              email: defaultSettings.email,
+              website: defaultSettings.website,
+              footerBusinessName: defaultSettings.footerBusinessName,
+              proofTitle: defaultSettings.proofTitle,
+              disclaimerHeading: defaultSettings.disclaimerHeading,
+              disclaimerText: defaultSettings.disclaimerText,
+              signatureWording: defaultSettings.signatureWording,
+              printNameLabel: defaultSettings.printNameLabel,
+              dateLabel: defaultSettings.dateLabel
+            }
+          : settings;
+
+        return {
+          ...persisted,
+          settings: migratedSettings,
+          proof: mergeProof(persisted?.proof)
+        };
+      }
     }
   )
 );
